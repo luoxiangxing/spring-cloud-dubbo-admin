@@ -1,0 +1,28 @@
+<assembly>
+	<id>bin</id>
+	<formats>
+		<format>zip</format>
+	</formats>
+	<!-- add this,the dir ${finalName} is not exist -->
+	<includeBaseDirectory>true</includeBaseDirectory>
+	<dependencySets>
+		<dependencySet>
+			<useProjectArtifact>false</useProjectArtifact>
+			<outputDirectory>/lib</outputDirectory>
+		</dependencySet>
+	</dependencySets>
+	<fileSets>
+		<fileSet>
+			<directory>bin/</directory>
+			<outputDirectory>/bin</outputDirectory>
+		</fileSet>
+		<fileSet>
+			<directory>log</directory>
+			<outputDirectory>/log</outputDirectory>
+		</fileSet>
+		<fileSet>
+			<directory>${project.build.directory}/classes</directory>
+			<outputDirectory>/classes</outputDirectory>
+		</fileSet>
+	</fileSets>
+</assembly>
