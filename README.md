@@ -3,9 +3,12 @@
 这个是根据开源的dubbo-admin修改而来的，因为开源的dubbo-admin不支持spring-cloud-dubbo的组件
 ，所以修改了源码。支持spring-cloud-dubbo
 1、目前引用的spring-cloud-dubbo为2.2.7.RELEASE，nacos的注册中心为：spring-cloud-starter-alibaba-nacos-discovery：2.2.7RELEASE
-2、修改了dubbo-metadata-report-redis的2.7.14的源码，对应的jar包为2.7.14-fix-RELEASE，这个jar包放在了meta-jar下，个人需要把这个jar放到本地或则自己的私服下
-3、这是是用了nacos作为注册中心
-4、redis作为元数据中心可用，亲测如果实用nacos注册元数据中心会不能指定namespace
+
+### 注意事项
+1、如果使用redis作为元数据中心，redis不能设置密码，这是dubbo2.7.X的bug，本项目对源码做了修改，修改了dubbo-metadata-report-redis的2.7.14的源码，对应的jar包为2.7.14-fix-RELEASE，这个jar包放在了meta-jar下，个人需要把这个jar放到本地或则自己的私服下
+2、亲测如果使用nacos注册元数据中心会不能指定namespace
+3、这是用了nacos作为注册中心
+
 
 
 [中文说明](README_ZH.md)
