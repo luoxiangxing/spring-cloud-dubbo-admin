@@ -4,11 +4,38 @@
 ，所以修改了源码。支持spring-cloud-dubbo
 1、目前引用的spring-cloud-dubbo为2.2.7.RELEASE，nacos的注册中心为：spring-cloud-starter-alibaba-nacos-discovery：2.2.7RELEASE
 
-### 注意事项
-1、如果使用redis作为元数据中心，redis不能设置密码，这是dubbo2.7.X的bug，本项目对源码做了修改，修改了dubbo-metadata-report-redis的2.7.14的源码，对应的jar包为2.7.14-fix-RELEASE，这个jar包放在了meta-jar下，个人需要把这个jar放到本地或则自己的私服下
-2、亲测如果使用nacos注册元数据中心会不能指定namespace
-3、这是用了nacos作为注册中心
+2、一、修改的具体类1、org.apache.dubbo.admin.service.RegistryServerSync引入spring-cloud-dubbo的类
+@Resource
+private DubboServiceMetadataRepository dubboServiceMetadataRepository;
+@Resource
+private DubboMetadataServiceProxy dubboMetadataConfigServiceProxy;
 
+3、具体的修改点
+//订阅spring-cloud-dubbo框架服务变更的事件SubscribedServicesChangedEvent
+@EventListener(SubscribedServicesChangedEvent.class)
+    public void start(SubscribedServicesChangedEvent event) throws Exception {
+        Set<String> allServiceKeys = dubboServiceMetadataRepository.getSubscribedServices();
+        log.info("订阅的所有服务：{}",allServiceKeys);
+        for (String serviceName:allServiceKeys){
+            try {
+                boolean initialized = dubboMetadataConfigServiceProxy.isInitialized(serviceName);
+                if(initialized){
+                    DubboMetadataService proxy = dubboMetadataConfigServiceProxy.getProxy(serviceName);
+                    Map<String, String> allExportedURLs = proxy.getAllExportedURLs();
+                    if(allExportedURLs !=null && !allExportedURLs.isEmpty()){
+                        allExportedURLs.forEach((key,value)->{
+                            List<URL> urlList = jsonUtils.toURLs(value);
+                            cacheURL(urlList);
+                        });
+                        //log.info("所有导出的接口：{}",allExportedURLs);
+                    }
+                }
+            }catch (Exception e){
+                log.error("获取服务暴露的URL出错,服务名：{}",serviceName);
+            }
+
+        }
+    }
 
 
 [中文说明](README_ZH.md)
